@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResuTech Pro — Student & Tech Official Resume Builder</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --resume-accent: #1d4ed8;
+            --resume-font: 'Inter', sans-serif;
+            --resume-scale: 1;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* A4 Paper Dimensions & Styling */
+        .a4-sheet {
+            width: 210mm;
+            min-height: 297mm;
+            background: #ffffff;
+            color: #111827;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            font-family: var(--resume-font);
+            transform-origin: top center;
+            transition: transform 0.15s ease;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* Template Specific Typographic Adjustments */
+        .font-inter { --resume-font: 'Inter', sans-serif; }
+        .font-serif-academic { --resume-font: 'Merriweather', Georgia, serif; }
+        .font-roboto { --resume-font: 'Roboto', sans-serif; }
+
+        /* Template 1: Jake's Classic Tech (Single Column ATS Standard) */
+        .tpl-jakes {
+            padding: 12mm 14mm;
+            line-height: 1.32;
+        }
+        .tpl-jakes .sec-title {
+            font-size: 10.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 1.5px solid #111827;
+            padding-bottom: 2px;
+            margin-top: 10px;
+            margin-bottom: 6px;
+            color: #111827;
+        }
+
+        /* Template 2: Modern Executive (Clean Accent) */
+        .tpl-executive {
+            padding: 14mm 16mm;
+            line-height: 1.38;
+        }
+        .tpl-executive .sec-title {
+            font-size: 11pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--resume-accent);
+            border-bottom: 2px solid var(--resume-accent);
+            padding-bottom: 3px;
+            margin-top: 12px;
+            margin-bottom: 7px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Template 3: Compact Academic/Student (Dense IIT/NIT style) */
+        .tpl-compact {
+            padding: 10mm 12mm;
+            line-height: 1.25;
+        }
+        .tpl-compact .sec-title {
+            font-size: 10pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            background-color: #f1f5f9;
+            border-left: 3.5px solid var(--resume-accent);
+            padding: 2px 6px;
+            margin-top: 8px;
+            margin-bottom: 5px;
+            color: #0f172a;
+        }
+
+        /* Bullet list formatting inside resume */
+        .resume-bullets {
+            list-style-type: disc;
+            padding-left: 1.15rem;
+            margin-top: 2px;
+        }
+        .resume-bullets li {
+            font-size: 9.2pt;
+            margin-bottom: 2px;
+            color: #1f2937;
+        }
+
+        /* Print Media Query - CRITICAL for clean PDF export */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+            html, body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            #preview-viewport {
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                background: transparent !important;
+            }
+            #resume-sheet {
+                box-shadow: none !important;
+                margin: 0 !important;
+                width: 210mm !important;
+                min-height: 297mm !important;
+                transform: none !important;
+                page-break-after: always;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden select-none">
+
+    <!-- TOP NAVIGATION & MODE BAR -->
+    <header class="no-print bg-slate-900 border-b border-slate-800 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 z-30 shrink-0">
+        <!-- Brand & Mode Switcher -->
+        <div class="flex items-center gap-4 flex-wrap">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-600/20">
+                    <i class="fa-solid fa-file-signature text-lg"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-bold text-base tracking-tight text-white">ResuTech<span class="text-blue-400">Pro</span></h1>
+                        <span class="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">ATS v4.2</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 hidden sm:block">Engineered for College Students & Tech Officials</p>
+                </div>
+            </div>
+
+            <!-- Dual Mode Switcher Pill -->
+            <div class="bg-slate-800/90 p-1 rounded-xl border border-slate-700/80 flex items-center text-xs">
+                <button id="mode-student-btn" onclick="switchProfileMode('student')" class="px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 bg-blue-600 text-white shadow">
+                    <i class="fa-solid fa-user-graduate"></i>
+                    <span>College Student / Fresher</span>
+                </button>
+                <button id="mode-official-btn" onclick="switchProfileMode('official')" class="px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-user-tie"></i>
+                    <span>Tech Official / Experienced</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Sample Loaders & Export Actions -->
+        <div class="flex items-center gap-2 flex-wrap">
+            <div class="flex items-center bg-slate-800/70 rounded-lg p-1 border border-slate-700/60 text-xs">
+                <span class="text-slate-400 px-2 font-medium hidden xl:inline">Quick Demo:</span>
+                <button onclick="loadSampleData('student')" class="px-2.5 py-1 rounded-md hover:bg-slate-700 text-emerald-400 font-medium transition flex items-center gap-1.5" title="Load B.Tech CSE Student Sample">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Student Sample
+                </button>
+                <div class="h-3 w-[1px] bg-slate-700 mx-1"></div>
+                <button onclick="loadSampleData('official')" class="px-2.5 py-1 rounded-md hover:bg-slate-700 text-amber-400 font-medium transition flex items-center gap-1.5" title="Load Principal Architect / VP Eng Sample">
+                    <i class="fa-solid fa-bolt"></i> Tech Official Sample
+                </button>
+            </div>
+
+            <!-- JSON Import/Export -->
+            <button onclick="exportResumeJSON()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium transition flex items-center gap-1.5" title="Save Backup JSON">
+                <i class="fa-solid fa-download text-slate-400"></i> <span class="hidden md:inline">JSON</span>
+            </button>
+            <label class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium transition flex items-center gap-1.5 cursor-pointer" title="Restore from JSON">
+                <i class="fa-solid fa-upload text-slate-400"></i> <span class="hidden md:inline">Import</span>
+                <input type="file" id="json-import-input" accept=".json" class="hidden" onchange="importResumeJSON(event)">
+            </label>
+
+            <!-- Primary Print / PDF CTA -->
+            <button onclick="triggerPrintPDF()" class="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-xs shadow-lg shadow-blue-600/25 transition flex items-center gap-2">
+                <i class="fa-solid fa-file-pdf"></i>
+                <span>Export / Print A4 PDF</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MOBILE VIEW SWITCHER (Only visible on < lg screens) -->
+    <div class="no-print lg:hidden bg-slate-800 border-b border-slate-700 px-4 py-2 flex items-center justify-between">
+        <div class="flex gap-2 w-full">
+            <button id="mob-tab-edit" onclick="toggleMobileView('editor')" class="flex-1 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-semibold flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-pen-to-square"></i> Form Editor
+            </button>
+            <button id="mob-tab-prev" onclick="toggleMobileView('preview')" class="flex-1 py-1.5 rounded-lg bg-slate-700 text-slate-300 text-xs font-semibold flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-eye"></i> Live A4 Preview
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN SPLIT WORKSPACE -->
+    <div class="flex-1 flex overflow-hidden relative">
+
+        <!-- LEFT PANEL: FORM EDITOR & ATS ANALYZER -->
+        <aside id="editor-panel" class="no-print w-full lg:w-[46%] xl:w-[44%] h-full bg-slate-900 border-r border-slate-800 flex flex-col overflow-hidden select-text">
+
+            <!-- ATS Score & Action Insights Bar -->
+            <div class="bg-slate-800/60 border-b border-slate-800 px-4 py-2.5 flex items-center justify-between gap-4 shrink-0">
+                <div class="flex items-center gap-3 flex-1">
+                    <div class="relative w-11 h-11 rounded-full bg-slate-900 border-2 border-emerald-500 flex items-center justify-center shrink-0" id="ats-score-ring">
+                        <span id="ats-score-val" class="text-xs font-bold text-emerald-400">92%</span>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-semibold text-slate-200">ATS Readability & Impact Score</span>
+                            <span id="ats-badge" class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-medium">Strong</span>
+                        </div>
+                        <p id="ats-feedback-text" class="text-[11px] text-slate-400 truncate mt-0.5">Checking quantified metrics, action verbs & links...</p>
+                    </div>
+                </div>
+                <button onclick="toggleATSModal()" class="px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-[11px] font-medium text-blue-400 shrink-0 transition">
+                    <i class="fa-solid fa-chart-pie mr-1"></i> Audit Details
+                </button>
+            </div>
+
+            <!-- Section Navigation Tabs -->
+            <div class="bg-slate-900 border-b border-slate-800 px-3 py-2 flex items-center gap-1.5 overflow-x-auto shrink-0" id="editor-tabs">
+                <button onclick="switchEditorTab('personal')" data-tab="personal" class="editor-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition flex items-center gap-1.5 bg-blue-600/15 text-blue-400 border border-blue-500/30">
+                    <i class="fa-solid fa-id-card"></i> Personal & Links
+                </button>
+                <button onclick="switchEditorTab('education')" data-tab="education" class="editor-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+                    <i class="fa-solid fa-graduation-cap"></i> Education
+                </button>
+                <button onclick="switchEditorTab('experience')" data-tab="experience" class="editor-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+                    <i class="fa-solid fa-briefcase"></i> Experience
+                </button>
+                <button onclick="switchEditorTab('projects')" data-tab="projects" class="editor-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+                    <i class="fa-solid fa-code-branch"></i> Projects & Architecture
+                </button>
+                <button onclick="switchEditorTab('skills')" data-tab="skills" class="editor-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+                    <i class="fa-solid fa-microchip"></i> Tech Stack & Profiles
+                </button>
+                <button onclick="switchEditorTab('achievements')" data-tab="achievements" class="editor-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+                    <i class="fa-solid fa-trophy"></i> Achievements & Certs
+                </button>
+                <button onclick="switchEditorTab('order')" data-tab="order" class="editor-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+                    <i class="fa-solid fa-sort"></i> Section Order
+                </button>
+            </div>
+
+            <!-- Dynamic Editor Form Container -->
+            <div id="editor-form-container" class="flex-1 overflow-y-auto p-4 space-y-5">
+                <!-- Populated dynamically via JS -->
+            </div>
+
+            <!-- Bottom Status Bar -->
+            <div class="bg-slate-950 border-t border-slate-800/80 px-4 py-2 flex items-center justify-between text-[11px] text-slate-400 shrink-0">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="save-status">Auto-saved to browser storage</span>
+                </div>
+                <button onclick="resetToCurrentModeDefault()" class="text-slate-400 hover:text-rose-400 transition flex items-center gap-1">
+                    <i class="fa-solid fa-rotate-left"></i> Reset Current Data
+                </button>
+            </div>
+        </aside>
+
+        <!-- RIGHT PANEL: LIVE A4 PREVIEW & STYLING CONTROLS -->
+        <main id="preview-panel" class="hidden lg:flex flex-1 h-full bg-slate-950 flex-col overflow-hidden">
+
+            <!-- Template & Styling Toolbar -->
+            <div class="no-print bg-slate-900/90 border-b border-slate-800 px-4 py-2 flex flex-wrap items-center justify-between gap-3 shrink-0">
+                <!-- Template Selector -->
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-medium text-slate-400"><i class="fa-solid fa-layer-group mr-1 text-blue-400"></i>Template:</span>
+                    <div class="flex bg-slate-800 p-0.5 rounded-lg border border-slate-700 text-xs">
+                        <button onclick="setTemplate('jakes')" id="tpl-btn-jakes" class="px-2.5 py-1 rounded-md font-medium transition bg-blue-600 text-white">
+                            Jake's Classic Tech
+                        </button>
+                        <button onclick="setTemplate('executive')" id="tpl-btn-executive" class="px-2.5 py-1 rounded-md font-medium transition text-slate-300 hover:text-white">
+                            Modern Executive
+                        </button>
+                        <button onclick="setTemplate('compact')" id="tpl-btn-compact" class="px-2.5 py-1 rounded-md font-medium transition text-slate-300 hover:text-white">
+                            Compact Academic
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Font, Color & Zoom Controls -->
+                <div class="flex items-center gap-3 flex-wrap">
+                    <!-- Font Family -->
+                    <div class="flex items-center gap-1.5 text-xs">
+                        <span class="text-slate-400">Font:</span>
+                        <select id="font-selector" onchange="setFontFamily(this.value)" class="bg-slate-800 border border-slate-700 rounded-md px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+                            <option value="font-inter">Inter (Modern Sans)</option>
+                            <option value="font-serif-academic">Merriweather (Academic Serif)</option>
+                            <option value="font-roboto">Roboto (Clean Tech)</option>
+                        </select>
+                    </div>
+
+                    <!-- Accent Color Swatches -->
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-xs text-slate-400">Accent:</span>
+                        <button onclick="setAccentColor('#1d4ed8')" class="w-4 h-4 rounded-full bg-blue-700 ring-2 ring-offset-1 ring-offset-slate-900 ring-transparent hover:scale-110 transition" title="Royal Tech Blue"></button>
+                        <button onclick="setAccentColor('#0f172a')" class="w-4 h-4 rounded-full bg-slate-900 border border-slate-500 ring-2 ring-offset-1 ring-offset-slate-900 ring-transparent hover:scale-110 transition" title="Pure Monochrome Ink"></button>
+                        <button onclick="setAccentColor('#047857')" class="w-4 h-4 rounded-full bg-emerald-700 ring-2 ring-offset-1 ring-offset-slate-900 ring-transparent hover:scale-110 transition" title="Emerald Systems"></button>
+                        <button onclick="setAccentColor('#6d28d9')" class="w-4 h-4 rounded-full bg-violet-700 ring-2 ring-offset-1 ring-offset-slate-900 ring-transparent hover:scale-110 transition" title="Executive Violet"></button>
+                        <button onclick="setAccentColor('#b91c1c')" class="w-4 h-4 rounded-full bg-red-700 ring-2 ring-offset-1 ring-offset-slate-900 ring-transparent hover:scale-110 transition" title="Crimson Academic"></button>
+                    </div>
+
+                    <!-- Zoom Controls -->
+                    <div class="flex items-center bg-slate-800 rounded-md border border-slate-700 text-xs">
+                        <button onclick="adjustZoom(-0.08)" class="px-2 py-1 text-slate-300 hover:text-white"><i class="fa-solid fa-minus"></i></button>
+                        <span id="zoom-label" class="px-1.5 font-mono text-[11px] text-slate-300">85%</span>
+                        <button onclick="adjustZoom(0.08)" class="px-2 py-1 text-slate-300 hover:text-white"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live A4 Canvas Viewport -->
+            <div id="preview-viewport" class="flex-1 overflow-auto p-6 md:p-8 flex justify-center items-start bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px]">
+                <div id="resume-sheet" class="a4-sheet tpl-jakes font-inter select-text">
+                    <!-- Live Rendered Resume HTML Injected Here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ATS AUDIT BREAKDOWN MODAL -->
+    <div id="ats-modal" class="no-print fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-5 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-robot text-blue-400 text-lg"></i>
+                    <h3 class="font-bold text-base text-white">ATS Readability & Impact Audit</h3>
+                </div>
+                <button onclick="toggleATSModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div id="ats-modal-body" class="space-y-3 text-xs max-h-[65vh] overflow-y-auto pr-1">
+                <!-- Populated dynamically -->
+            </div>
+            <div class="pt-2 border-t border-slate-800 flex justify-end">
+                <button onclick="toggleATSModal()" class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold">Got It</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast-box" class="no-print fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-slate-800 border border-slate-700 text-white px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2.5 text-xs font-medium">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toast-msg">Saved!</span>
+    </div>
+
+    <!-- APPLICATION LOGIC -->
+    <script>
+        /********************************************************************
+         * 1. RICH SAMPLE DATASETS (STUDENT MODE & TECH OFFICIAL MODE)
+         ********************************************************************/
+        const STUDENT_SAMPLE = {
+            mode: 'student',
+            template: 'jakes',
+            font: 'font-inter',
+            accentColor: '#1d4ed8',
+            sectionOrder: ['education', 'skills', 'experience', 'projects', 'achievements'],
+            personal: {
+                fullName: "Aarav Sharma",
+                headline: "Final Year B.Tech in Computer Science & Engineering | Full-Stack & Distributed Systems",
+                email: "aarav.sharma.cse@iitb.ac.in",
+                phone: "+91 98765 43210",
+                location: "Mumbai, Maharashtra, India",
+                linkedin: "linkedin.com/in/aaravsharma-dev",
+                github: "github.com/aarav-codes",
+                portfolio: "aaravsharma.dev",
+                codingProfile: "LeetCode: 2140 (Guardian) | Codeforces: 1780 (Expert)",
+                summary: "" // Optional in student mode, prioritized in official mode
+            },
+            education: [
+                {
+                    id: "edu-1",
+                    institution: "Indian Institute of Technology (IIT), Bombay",
+                    degree: "B.Tech in Computer Science & Engineering (Minor in AI & Data Science)",
+                    score: "CGPA: 9.18 / 10.0",
+                    duration: "Aug 2022 – May 2026",
+                    location: "Mumbai, India",
+                    coursework: "Data Structures & Algorithms, Operating Systems, Computer Networks, DBMS, Distributed Systems, Machine Learning"
+                },
+                {
+                    id: "edu-2",
+                    institution: "Delhi Public School, R.K. Puram",
+                    degree: "CBSE Class XII (Senior Secondary - PCM with CS)",
+                    score: "Percentage: 97.4%",
+                    duration: "2020 – 2022",
+                    location: "New Delhi, India",
+                    coursework: "National Top 0.1% in Computer Science; JEE Advanced AIR 342"
+                }
+            ],
+            experience: [
+                {
+                    id: "exp-1",
+                    role: "Software Engineering Intern (Backend & Cloud Infrastructure)",
+                    company: "Razorpay",
+                    duration: "May 2025 – Jul 2025",
+                    location: "Bengaluru, India (Hybrid)",
+                    techStack: "Go, Apache Kafka, Redis, PostgreSQL, Docker, Kubernetes",
+                    bullets: [
+                        "Engineered an asynchronous webhook retry microservice in Golang and Kafka, handling 18,000+ events/sec with 99.98% delivery reliability.",
+                        "Optimized merchant settlement PostgreSQL queries using composite indexing and Redis caching, cutting P99 API latency by 42% (from 310ms to 180ms).",
+                        "Built automated chaos-testing pipelines in Kubernetes, identifying 3 critical race conditions prior to production rollout."
+                    ]
+                },
+                {
+                    id: "exp-2",
+                    role: "Open Source Mentee — Google Summer of Code (GSoC)",
+                    company: "Cloud Native Computing Foundation (CNCF)",
+                    duration: "May 2024 – Aug 2024",
+                    location: "Remote",
+                    techStack: "Rust, eBPF, Prometheus, gRPC, Linux Kernel",
+                    bullets: [
+                        "Developed lightweight eBPF telemetry probes in Rust to monitor container-level TCP packet drops with <1.2% CPU overhead.",
+                        "Authored 14 merged pull requests and comprehensive documentation adopted by 2,400+ community developers."
+                    ]
+                }
+            ],
+            projects: [
+                {
+                    id: "proj-1",
+                    title: "ChronosKV — Raft-Based Distributed Key-Value Store",
+                    subtitle: "High-Throughput Fault-Tolerant Storage Engine",
+                    duration: "Jan 2025 – Apr 2025",
+                    techStack: "Go, gRPC, Protobuf, Raft Consensus, BoltDB",
+                    githubLink: "github.com/aarav-codes/chronos-kv",
+                    liveLink: "chronos-benchmarks.dev",
+                    bullets: [
+                        "Implemented leader election, log replication, and snapshotting from scratch following the Raft consensus paper across a 5-node cluster.",
+                        "Achieved 65,000+ read/write ops/sec under simulated network partitions and node failures using custom gRPC streaming."
+                    ]
+                },
+                {
+                    id: "proj-2",
+                    title: "CodePulse AI — Real-Time Collaborative IDE & Code Reviewer",
+                    subtitle: "Full-Stack Web Platform for Technical Interviews",
+                    duration: "Aug 2024 – Nov 2024",
+                    techStack: "Next.js, TypeScript, WebSockets, Yjs CRDT, Docker, AWS ECS",
+                    githubLink: "github.com/aarav-codes/codepulse-ide",
+                    liveLink: "codepulse.aaravsharma.dev",
+                    bullets: [
+                        "Built a conflict-free collaborative code editor using Yjs CRDTs and WebSockets supporting 50+ concurrent users per room with <35ms sync latency.",
+                        "Designed isolated ephemeral Docker sandboxes for executing code in 8 languages safely with strict memory and CPU cgroups limits."
+                    ]
+                },
+                {
+                    id: "proj-3",
+                    title: "MedVision — Federated Learning Framework for Retinal Diagnostics",
+                    subtitle: "Research Project under Prof. S. Kulkarni",
+                    duration: "Jan 2024 – May 2024",
+                    techStack: "Python, PyTorch, Flower, FastAPI, ONNX",
+                    githubLink: "github.com/aarav-codes/medvision-fl",
+                    liveLink: "",
+                    bullets: [
+                        "Trained a privacy-preserving ResNet-50 model across 4 simulated hospital nodes using differential privacy, achieving 94.6% validation F1-score."
+                    ]
+                }
+            ],
+            skills: {
+                languages: "C++, Go (Golang), Python, TypeScript, SQL, Rust, Bash",
+                frameworks: "React.js, Next.js, Node.js, FastAPI, gRPC, PyTorch, TailwindCSS",
+                cloudDevops: "Docker, Kubernetes, AWS (EC2, S3, ECS, Lambda), Kafka, Redis, Git, Linux",
+                coreSystems: "Distributed Systems, Low-Latency Backend, Data Structures & Algorithms, System Design, eBPF",
+                codingProfiles: "LeetCode: 2140 Rating (Top 1.2% Globally, 750+ problems) | Codeforces: 1780 (Expert) | GitHub: 480+ Stars"
+            },
+            achievements: [
+                "Winner (1st Place) at Smart India Hackathon (SIH) 2024 among 1,500+ competing national engineering teams.",
+                "ACM ICPC Asia West Continent Finalist (2024–25); Ranked 14th in Amritapuri Regional.",
+                "Recipient of Aditya Birla Merit Scholarship (awarded to top 20 engineering students across IITs).",
+                "Coordinator, Programming & Algorithms Club (PAC), IIT Bombay — Mentored 400+ freshmen in competitive programming."
+            ]
+        };
+
+        const OFFICIAL_SAMPLE = {
+            mode: 'official',
+            template: 'executive',
+            font: 'font-inter',
+            accentColor: '#1d4ed8',
+            sectionOrder: ['summary', 'experience', 'skills', 'projects', 'achievements', 'education'],
+            personal: {
+                fullName: "Vikramaditya Rao",
+                headline: "Principal Systems Architect & VP of Engineering | FinTech, Cloud-Native & High-Scale Distributed Platforms",
+                email: "vikram.rao@techleadership.io",
+                phone: "+91 98201 11223 | +1 (415) 890-4321",
+                location: "Bengaluru, India / San Francisco Bay Area",
+                linkedin: "linkedin.com/in/vikramadityarao-arch",
+                github: "github.com/vrao-systems",
+                portfolio: "vikramrao.tech",
+                codingProfile: "AWS Certified Solutions Architect Pro | CNCF Ambassador",
+                summary: "Technology Executive and Principal Distributed Systems Architect with 12+ years of experience scaling mission-critical payment, cloud infrastructure, and AI data platforms from 0 to 150M+ active users. Proven track record of leading 85+ cross-functional engineers, reducing multi-million-dollar cloud spend by 38%, and delivering 99.999% SLA tier-0 microservices."
+            },
+            education: [
+                {
+                    id: "edu-off-1",
+                    institution: "Indian Institute of Science (IISc), Bengaluru",
+                    degree: "M.Tech in Computer Science & Systems Engineering",
+                    score: "CGPA: 9.4 / 10.0 (Gold Medalist)",
+                    duration: "2012 – 2014",
+                    location: "Bengaluru, India",
+                    coursework: "Thesis: High-Throughput Consensus Protocols in Geo-Distributed Datacenters"
+                },
+                {
+                    id: "edu-off-2",
+                    institution: "National Institute of Technology (NIT), Tiruchirappalli",
+                    degree: "B.Tech in Computer Science & Engineering",
+                    score: "CGPA: 9.1 / 10.0",
+                    duration: "2008 – 2012",
+                    location: "Tiruchirappalli, India",
+                    coursework: ""
+                }
+            ],
+            experience: [
+                {
+                    id: "exp-off-1",
+                    role: "Vice President of Engineering & Principal Architect",
+                    company: "PayScale Global FinTech",
+                    duration: "Jan 2022 – Present",
+                    location: "Bengaluru, India",
+                    techStack: "Go, Java 21, Apache Kafka, CockroachDB, AWS EKS, Istio Service Mesh, Terraform",
+                    bullets: [
+                        "Spearheaded an organization of 85+ engineers, 6 Engineering Managers, and 4 Principal Engineers across Core Payments, Ledger, and Risk Engineering.",
+                        "Architected a multi-region active-active UPI & Real-Time Payments switch processing $42B+ annualized TPV at 45,000 peak TPS with 99.999% uptime.",
+                        "Drove FinOps cloud modernization across 300+ microservices (migrating to AWS Graviton3 & Spot Kubernetes nodes), saving $2.4M annually (38% cost reduction).",
+                        "Established org-wide DORA engineering metrics, reducing mean lead time for production deployments from 4 days to 45 minutes."
+                    ]
+                },
+                {
+                    id: "exp-off-2",
+                    role: "Staff Software Engineer — Cloud Data Infrastructure",
+                    company: "Uber Technologies",
+                    duration: "Jun 2018 – Dec 2021",
+                    location: "San Francisco, CA & Bengaluru",
+                    techStack: "Go, Apache Flink, Pinot, Cassandra, Kubernetes, gRPC",
+                    bullets: [
+                        "Designed and led the real-time surge pricing streaming pipeline ingesting 12M+ events/second across 10,000+ cities using Apache Flink and Kafka.",
+                        "Engineered custom rocksDB state-backend tuning and tiered storage, reducing stateful stream recovery time from 25 minutes to under 90 seconds.",
+                        "Mentored 25+ senior engineers and served on the Global Architecture Review Board evaluating tier-1 system designs."
+                    ]
+                },
+                {
+                    id: "exp-off-3",
+                    role: "Senior Software Development Engineer (SDE-II / SDE-III)",
+                    company: "Amazon Web Services (AWS)",
+                    duration: "Jul 2014 – May 2018",
+                    location: "Seattle, WA",
+                    techStack: "Java, Rust, C++, DynamoDB, AWS Nitro",
+                    bullets: [
+                        "Core contributor to DynamoDB storage node replication engine, improving tail P99.9 read latency by 28% during hot-partition bursts.",
+                        "Designed automated zero-downtime partition splitting algorithms deployed across 18 global AWS regions."
+                    ]
+                }
+            ],
+            projects: [
+                {
+                    id: "proj-off-1",
+                    title: "AegisMesh — Zero-Trust Multi-Region Financial Ledger Architecture",
+                    subtitle: "Enterprise Architecture & Open Technical Whitepaper",
+                    duration: "2024",
+                    techStack: "CockroachDB, Envoy Proxy, mTLS, OpenTelemetry, Go",
+                    githubLink: "github.com/vrao-systems/aegis-ledger-spec",
+                    liveLink: "vikramrao.tech/aegis-whitepaper",
+                    bullets: [
+                        "Authored reference architecture for PCI-DSS 4.0 and RBI-compliant sovereign financial data storage with deterministic double-entry verification.",
+                        "Adopted by 3 partner banking institutions to audit real-time cross-border settlements."
+                    ]
+                },
+                {
+                    id: "proj-off-2",
+                    title: "KubeScaler-AI — Predictive Autoscaler for High-Velocity Kubernetes Clusters",
+                    subtitle: "Open Source CNCF Sandbox Utility",
+                    duration: "2023",
+                    techStack: "Go, Prometheus, Kubernetes Operator SDK, ONNX Runtime",
+                    githubLink: "github.com/vrao-systems/kubescaler-ai",
+                    liveLink: "",
+                    bullets: [
+                        "Built a custom Kubernetes Operator utilizing time-series forecasting to pre-warm pods 4 minutes ahead of predictable flash-sale traffic spikes.",
+                        "Garnered 3,200+ GitHub stars and deployed in production by 14 high-traffic e-commerce platforms."
+                    ]
+                }
+            ],
+            skills: {
+                languages: "Go (Golang), Java (JVM/Concurrency), Rust, Python, C++, SQL",
+                frameworks: "gRPC, Apache Kafka, Apache Flink, Spring Boot, Envoy, OpenTelemetry, GraphQL",
+                cloudDevops: "AWS (EKS, DynamoDB, Aurora, Graviton), Kubernetes, Terraform, Istio, Prometheus, FinOps",
+                coreSystems: "Multi-Region Active-Active Architecture, High-Frequency Payment Switches, Engineering Leadership, SOC2/PCI-DSS Compliance",
+                codingProfiles: "Patents: 2 Granted US Patents in Distributed Consensus | Speaker: KubeCon & AWS re:Invent"
+            },
+            achievements: [
+                "Granted US Patent #11,482,910: 'Deterministic State Reconciliation in Geo-Distributed Financial Ledgers' (2024).",
+                "Certified Kubernetes Security Specialist (CKS) & AWS Certified Solutions Architect – Professional.",
+                "Keynote Speaker at KubeCon India 2025 & Fifth Elephant on 'Operating Tier-0 Payment Systems at 99.999% Availability'.",
+                "Technical Advisor to 3 Y-Combinator backed B2B SaaS & Infrastructure startups."
+            ]
+        };
+
+        /********************************************************************
+         * 2. STATE MANAGEMENT & INITIALIZATION
+         ********************************************************************/
+        const STORAGE_KEY = 'resutech_pro_state_v1';
+        let resumeState = null;
+        let activeTab = 'personal';
+        let currentZoom = 0.85;
+
+        const STRONG_ACTION_VERBS = [
+            'engineered', 'architected', 'developed', 'built', 'designed', 'spearheaded',
+            'optimized', 'reduced', 'increased', 'accelerated', 'automated', 'implemented',
+            'deployed', 'led', 'scaled', 'migrated', 'authored', 'orchestrated', 'pioneered',
+            'achieved', 'launched', 'refactored', 'streamlined', 'resolved', 'delivered', 'trained'
+        ];
+
+        window.onload = function() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    resumeState = JSON.parse(saved);
+                } catch (e) {
+                    resumeState = JSON.parse(JSON.stringify(STUDENT_SAMPLE));
+                }
+            } else {
+                resumeState = JSON.parse(JSON.stringify(STUDENT_SAMPLE));
+            }
+
+            syncUIWithState();
+            renderEditorForm();
+            renderResumePreview();
+            calculateATSScore();
+            autoFitPreviewZoom();
+
+            window.addEventListener('resize', autoFitPreviewZoom);
+        };
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(resumeState));
+                const statusEl = document.getElementById('save-status');
+                if (statusEl) {
+                    statusEl.textContent = 'Saved just now';
+                    setTimeout(() => { statusEl.textContent = 'Auto-saved to browser storage'; }, 2000);
+                }
+            } catch (e) {
+                console.error("Failed to save state to localStorage", e);
+            }
+        }
+
+        function showToast(msg, iconClass = 'fa-circle-check text-emerald-400') {
+            const box = document.getElementById('toast-box');
+            const icon = document.getElementById('toast-icon');
+            const text = document.getElementById('toast-msg');
+            icon.className = `fa-solid ${iconClass}`;
+            text.textContent = msg;
+            box.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                box.classList.add('translate-y-20', 'opacity-0');
+            }, 2600);
+        }
+
+        /********************************************************************
+         * 3. MODE SWITCHER & SAMPLE LOADERS
+         ********************************************************************/
+        function switchProfileMode(targetMode) {
+            resumeState.mode = targetMode;
+
+            // Automatically adjust section ordering priorities to fit the mode
+            if (targetMode === 'student') {
+                resumeState.sectionOrder = ['education', 'skills', 'experience', 'projects', 'achievements'];
+                if (resumeState.Personal && !resumeState.personal.fullName) {
+                    resumeState = JSON.parse(JSON.stringify(STUDENT_SAMPLE));
+                }
+            } else {
+                resumeState.sectionOrder = ['summary', 'experience', 'skills', 'projects', 'achievements', 'education'];
+                if (!resumeState.personal.summary) {
+                    resumeState.personal.summary = "Experienced Technology Leader & Systems Architect specializing in scalable cloud-native microservices, high-availability distributed systems, and engineering execution.";
+                }
+            }
+
+            syncUIWithState();
+            renderEditorForm();
+            renderResumePreview();
+            calculateATSScore();
+            saveState();
+
+            showToast(
+                targetMode === 'student'
+                    ? "Switched to College Student Mode (Education & Projects prioritized)"
+                    : "Switched to Tech Official Mode (Executive Summary & Impact prioritized)"
+            );
+        }
+
+        function loadSampleData(sampleType) {
+            if (sampleType === 'student') {
+                resumeState = JSON.parse(JSON.stringify(STUDENT_SAMPLE));
+                showToast("Loaded Indian/Global B.Tech CSE Student Sample!", "fa-wand-magic-sparkles text-emerald-400");
+            } else {
+                resumeState = JSON.parse(JSON.stringify(OFFICIAL_SAMPLE));
+                showToast("Loaded Principal Architect / VP Engineering Sample!", "fa-bolt text-amber-400");
+            }
+            syncUIWithState();
+            renderEditorForm();
+            renderResumePreview();
+            calculateATSScore();
+            saveState();
+        }
+
+        function resetToCurrentModeDefault() {
+            loadSampleData(resumeState.mode);
+        }
+
+        function syncUIWithState() {
+            // Mode buttons
+            const studentBtn = document.getElementById('mode-student-btn');
+            const officialBtn = document.getElementById('mode-official-btn');
+            if (resumeState.mode === 'student') {
+                studentBtn.className = "px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 bg-blue-600 text-white shadow";
+                officialBtn.className = "px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 text-slate-300 hover:text-white";
+            } else {
+                officialBtn.className = "px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 bg-indigo-600 text-white shadow";
+                studentBtn.className = "px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 text-slate-300 hover:text-white";
+            }
+
+            // Template buttons
+            ['jakes', 'executive', 'compact'].forEach(tpl => {
+                const btn = document.getElementById(`tpl-btn-${tpl}`);
+                if (btn) {
+                    btn.className = (resumeState.template === tpl)
+                        ? "px-2.5 py-1 rounded-md font-medium transition bg-blue-600 text-white"
+                        : "px-2.5 py-1 rounded-md font-medium transition text-slate-300 hover:text-white";
+                }
+            });
+
+            // Font selector
+            const fontSel = document.getElementById('font-selector');
+            if (fontSel && resumeState.font) {
+                fontSel.value = resumeState.font;
+            }
+
+            // Apply CSS variables & classes to A4 sheet
+            const sheet = document.getElementById('resume-sheet');
+            if (sheet) {
+                sheet.className = `a4-sheet tpl-${resumeState.template} ${resumeState.font || 'font-inter'} select-text`;
+                document.documentElement.style.setProperty('--resume-accent', resumeState.accentColor || '#1d4ed8');
+            }
+        }
+
+        /********************************************************************
+         * 4. STYLING, TEMPLATES & ZOOM CONTROLS
+         ********************************************************************/
+        function setTemplate(tplName) {
+            resumeState.template = tplName;
+            syncUIWithState();
+            renderResumePreview();
+            saveState();
+        }
+
+        function setFontFamily(fontClass) {
+            resumeState.font = fontClass;
+            syncUIWithState();
+            saveState();
+        }
+
+        function setAccentColor(hex) {
+            resumeState.accentColor = hex;
+            document.documentElement.style.setProperty('--resume-accent', hex);
+            renderResumePreview();
+            saveState();
+        }
+
+        function adjustZoom(delta) {
+            currentZoom = Math.min(1.15, Math.max(0.45, currentZoom + delta));
+            applyZoom();
+        }
+
+        function autoFitPreviewZoom() {
+            const viewport = document.getElementById('preview-viewport');
+            if (!viewport) return;
+            const availableWidth = viewport.clientWidth - 48;
+            const a4PixelWidth = 794; // 210mm at 96dpi
+            if (availableWidth > 300 && availableWidth < a4PixelWidth) {
+                currentZoom = Math.max(0.42, +(availableWidth / a4PixelWidth).toFixed(2));
+            } else if (availableWidth >= a4PixelWidth) {
+                currentZoom = Math.min(0.92, +(availableWidth / (a4PixelWidth + 80)).toFixed(2));
+            }
+            applyZoom();
+        }
+
+        function applyZoom() {
+            const sheet = document.getElementById('resume-sheet');
+            const label = document.getElementById('zoom-label');
+            if (sheet) {
+                sheet.style.transform = `scale(${currentZoom})`;
+                sheet.style.marginBottom = `${(currentZoom - 1) * 1122}px`;
+            }
+            if (label) {
+                label.textContent = `${Math.round(currentZoom * 100)}%`;
+            }
+        }
+
+        function toggleMobileView(view) {
+            const editorPanel = document.getElementById('editor-panel');
+            const previewPanel = document.getElementById('preview-panel');
+            const btnEdit = document.getElementById('mob-tab-edit');
+            const btnPrev = document.getElementById('mob-tab-prev');
+
+            if (view === 'editor') {
+                editorPanel.classList.remove('hidden');
+                previewPanel.classList.add('hidden');
+                previewPanel.classList.remove('flex');
+                btnEdit.className = "flex-1 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-semibold flex items-center justify-center gap-1.5";
+                btnPrev.className = "flex-1 py-1.5 rounded-lg bg-slate-700 text-slate-300 text-xs font-semibold flex items-center justify-center gap-1.5";
+            } else {
+                editorPanel.classList.add('hidden');
+                previewPanel.classList.remove('hidden');
+                previewPanel.classList.add('flex');
+                btnPrev.className = "flex-1 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-semibold flex items-center justify-center gap-1.5";
+                btnEdit.className = "flex-1 py-1.5 rounded-lg bg-slate-700 text-slate-300 text-xs font-semibold flex items-center justify-center gap-1.5";
+                setTimeout(autoFitPreviewZoom, 50);
+            }
+        }
+
+        /********************************************************************
+         * 5. LEFT PANEL: DYNAMIC FORM EDITOR
+         ********************************************************************/
+        function switchEditorTab(tabName) {
+            activeTab = tabName;
+            document.querySelectorAll('.editor-tab-btn').forEach(btn => {
+                if (btn.dataset.tab === tabName) {
+                    btn.className = "editor-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition flex items-center gap-1.5 bg-blue-600/15 text-blue-400 border border-blue-500/30";
+                } else {
+                    btn.className = "editor-tab-btn px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800";
+                }
+            });
+            renderEditorForm();
+        }
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function renderEditorForm() {
+            const container = document.getElementById('editor-form-container');
+            if (!container) return;
+
+            const isStudent = resumeState.mode === 'student';
+
+            if (activeTab === 'personal') {
+                const p = resumeState.personal;
+                container.innerHTML = `
+                    <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-4 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-user-circle text-blue-400"></i>
+                                ${isStudent ? 'Student Identity & Contact Links' : 'Executive Profile & Contact Info'}
+                            </h2>
+                            <span class="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+                                ${isStudent ? 'Fresher / Academic Mode' : 'Tech Official Mode'}
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-400 mb-1">Full Name *</label>
+                                <input type="text" value="${escapeHTML(p.fullName)}" oninput="updatePersonal('fullName', this.value)"
+                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-blue-500 focus:outline-none" placeholder="e.g., Aarav Sharma">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-400 mb-1">${isStudent ? 'Degree / Role Headline' : 'Executive Title / Headline'}</label>
+                                <input type="text" value="${escapeHTML(p.headline)}" oninput="updatePersonal('headline', this.value)"
+                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-blue-500 focus:outline-none" placeholder="e.g., Final Year B.Tech CSE | Principal Architect">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-400 mb-1">Email Address *</label>
+                                <input type="email" value="${escapeHTML(p.email)}" oninput="updatePersonal('email', this.value)"
+                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-blue-500 focus:outline-none" placeholder="name@institute.ac.in">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-400 mb-1">Phone Number *</label>
+                                <input type="text" value="${escapeHTML(p.phone)}" oninput="updatePersonal('phone', this.value)"
+                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-blue-500 focus:outline-none" placeholder="+91 98765 43210">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-400 mb-1">Location</label>
+                                <input type="text" value="${escapeHTML(p.location)}" oninput="updatePersonal('location', this.value)"
+                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-blue-500 focus:outline-none" placeholder="Bengaluru, India">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-400 mb-1">LinkedIn URL</label>
+                                <input type="text" value="${escapeHTML(p.linkedin)}" oninput="updatePersonal('linkedin', this.value)"
+                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-blue-500 focus:outline-none" placeholder="linkedin.com/in/username">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-400 mb-1">GitHub URL</label>
+                                <input type="text" value="${escapeHTML(p.github)}" oninput="updatePersonal('github', this.value)"
+                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-blue-500 focus:outline-none" placeholder="github.com/username">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-400 mb-1">Portfolio / Website</label>
+                                <input type="text" value="${escapeHTML(p.portfolio)}" oninput="updatePersonal('portfolio', this.value)"
+                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-blue-500 focus:outline-none" placeholder="yourname.dev">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-medium text-slate-400 mb-1">
+                                ${isStudent ? 'Header Coding Highlight (LeetCode / Codeforces / Kaggle)' : 'Header Credentials (Patents / Cloud Certifications)'}
+                            </label>
+                            <input type="text" value="${escapeHTML(p.codingProfile)}" oninput="updatePersonal('codingProfile', this.value)"
+                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-blue-500 focus:outline-none"
+                                placeholder="${isStudent ? 'e.g., LeetCode: 2140 (Guardian) | Codeforces: 1780' : 'e.g., AWS Solutions Architect Pro | 2 US Patents'}">
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-[11px] font-medium text-slate-400">
+                                    ${isStudent ? 'Objective / Summary (Optional for Freshers)' : 'Executive Summary & Leadership Scope (Recommended)'}
+                                </label>
+                                <span class="text-[10px] text-blue-400">${isStudent ? 'Leave blank for compact 1-page student style' : 'Appears at top of resume'}</span>
+                            </div>
+                            <textarea rows="3" oninput="updatePersonal('summary', this.value)"
+                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:border-blue-500 focus:outline-none"
+                                placeholder="Write a high-impact 2-3 sentence summary highlighting years of experience, scale of systems built, and core domain expertise...">${escapeHTML(p.summary)}</textarea>
+                        </div>
+                    </div>
+                `;
+            }
+
+            else if (activeTab === 'education') {
+                let html = `
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-sm font-bold text-white">Education & Academic Credentials</h2>
+                            <p class="text-[11px] text-slate-400">Include Degree, Branch, CGPA/Percentage, and key CS coursework.</p>
+                        </div>
+                        <button onclick="addEducationItem()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-plus"></i> Add Education
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                `;
+
+                resumeState.education.forEach((edu, idx) => {
+                    html += `
+                        <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-4 space-y-3">
+                            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                                <span class="text-xs font-semibold text-blue-400">#${idx + 1} — ${escapeHTML(edu.institution || 'New Institute')}</span>
+                                <div class="flex items-center gap-1.5">
+                                    <button onclick="moveArrayItem('education', ${idx}, -1)" class="p-1 text-slate-400 hover:text-white" title="Move Up"><i class="fa-solid fa-arrow-up text-xs"></i></button>
+                                    <button onclick="moveArrayItem('education', ${idx}, 1)" class="p-1 text-slate-400 hover:text-white" title="Move Down"><i class="fa-solid fa-arrow-down text-xs"></i></button>
+                                    <button onclick="removeArrayItem('education', ${idx})" class="p-1 text-slate-400 hover:text-rose-400" title="Delete"><i class="fa-solid fa-trash text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Institute / University *</label>
+                                    <input type="text" value="${escapeHTML(edu.institution)}" oninput="updateArrayField('education', ${idx}, 'institution', this.value)"
+                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white" placeholder="e.g., IIT Bombay / NIT Trichy">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Degree & Branch *</label>
+                                    <input type="text" value="${escapeHTML(edu.degree)}" oninput="updateArrayField('education', ${idx}, 'degree', this.value)"
+                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white" placeholder="e.g., B.Tech in Computer Science & Engineering">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">CGPA / Percentage</label>
+                                    <input type="text" value="${escapeHTML(edu.score)}" oninput="updateArrayField('education', ${idx}, 'score', this.value)"
+                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white" placeholder="e.g., CGPA: 9.18 / 10.0">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Duration / Passing Year</label>
+                                    <input type="text" value="${escapeHTML(edu.duration)}" oninput="updateArrayField('education', ${idx}, 'duration', this.value)"
+                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white" placeholder="Aug 2022 – May 2026">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Location</label>
+                                    <input type="text" value="${escapeHTML(edu.location)}" oninput="updateArrayField('education', ${idx}, 'location', this.value)"
+                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white" placeholder="Mumbai, India">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Relevant Coursework / Distinction</label>
+                                    <input type="text" value="${escapeHTML(edu.coursework)}" oninput="updateArrayField('education', ${idx}, 'coursework', this.value)"
+                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white" placeholder="DSA, OS, DBMS, Distributed Systems">
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+                container.innerHTML = html;
+            }
+
+            else if (activeTab === 'experience') {
+                let html = `
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-sm font-bold text-white">${isStudent ? 'Internships, GSoC & Industrial Training' : 'Work Experience & Engineering Leadership'}</h2>
+                            <p class="text-[11px] text-slate-400">Start bullets with strong action verbs and include quantified % or latency/scale numbers.</p>
+                        </div>
+                        <button onclick="addExperienceItem()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-plus"></i> Add Role
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                `;
+
+                resumeState.experience.forEach((exp, idx) => {
+                    const bulletsText = (exp.bullets || []).join('\n');
+                    html += `
+                        <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-4 space-y-3">
+                            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                                <span class="text-xs font-semibold text-blue-400">#${idx + 1} — ${escapeHTML(exp.role || 'Role')} @ ${escapeHTML(exp.company || 'Company')}</span>
+                                <div class="flex items-center gap-1.5">
+                                    <button onclick="moveArrayItem('experience', ${idx}, -1)" class="p-1 text-slate-400 hover:text-white"><i class="fa-solid fa-arrow-up text-xs"></i></button>
+                                    <button onclick="moveArrayItem('experience', ${idx}, 1)" class="p-1 text-slate-400 hover:text-white"><i class="fa-solid fa-arrow-down text-xs"></i></button>
+                                    <button onclick="removeArrayItem('experience', ${idx})" class="p-1 text-slate-400 hover:text-rose-400"><i class="fa-solid fa-trash text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Role / Title *</label>
+                                    <input type="text" value="${escapeHTML(exp.role)}" oninput="updateArrayField('experience', ${idx}, 'role', this.value)"
+                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white" placeholder="SDE Intern / VP of Engineering">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Company / Organization *</label>
+                                    <input type="text" value="${escapeHTML(exp.company)}" oninput="updateArrayField('experience', ${idx}, 'company', this.value)"
+                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white" placeholder="Razorpay / Uber / CNCF">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Duration</label>
+                                    <input type="text" value="${escapeHTML(exp.duration)}" oninput="updateArrayField('experience', ${idx}, 'duration', this.value)"
+                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white" placeholder="May 2025 – Jul 2025">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Location</label>
+                                    <input type="text" value="${escapeHTML(exp.location)}" oninput="updateArrayField('experience', ${idx}, 'location', this.value)"
+                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white" placeholder="Bengaluru, India">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-slate-400 mb-1">Architecture / Tech Stack Used</label>
+                                <input type="text" value="${escapeHTML(exp.techStack)}" oninput="updateArrayField('experience', ${idx}, 'techStack', this.value)"
+                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white" placeholder="Go, Kafka, Redis, PostgreSQL, Kubernetes">
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <label class="block text-[11px] text-slate-400">Impact Bullet Points (One bullet per line)</label>
+                                    <span class="text-[10px] text-emerald-400">Tip: Use % metrics, RPS, SLA, or $ saved</span>
+                                </div>
+                                <textarea rows="4" oninput="updateArrayBullets('experience', ${idx}, this.value)"
+                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white leading-relaxed focus:border-blue-500 focus:outline-none"
+                                    placeholder="Engineered microservice handling 15,000 req/s...">${escapeHTML(bulletsText)}</textarea>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+                container.innerHTML = html;
+            }
+
+            else if (activeTab === 'projects') {
+                let html = `
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-sm font-bold text-white">${isStudent ? 'Technical Projects & Open Source' : 'Key System Architectures & Flagship Deliverables'}</h2>
+                            <p class="text-[11px] text-slate-400">Highlight GitHub links, live demos, tech stack tags, and engineering complexity.</p>
+                        </div>
+                        <button onclick="addProjectItem()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-plus"></i> Add Project
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                `;
+
+                resumeState.projects.forEach((proj, idx) => {
+                    const bulletsText = (proj.bullets || []).join('\n');
+                    html += `
+                        <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-4 space-y-3">
+                            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                                <span class="text-xs font-semibold text-blue-400">#${idx + 1} — ${escapeHTML(proj.title || 'Project Title')}</span>
+                                <div class="flex items-center gap-1.5">
+                                    <button onclick="moveArrayItem('projects', ${idx}, -1)" class="p-1 text-slate-400 hover:text-white"><i class="fa-solid fa-arrow-up text-xs"></i></button>
+                                    <button onclick="moveArrayItem('projects', ${idx}, 1)" class="p-1 text-slate-400 hover:text-white"><i class="fa-solid fa-arrow-down text-xs"></i></button>
+                                    <button onclick="removeArrayItem('projects', ${idx})" class="p-1 text-slate-400 hover:text-rose-400"><i class="fa-solid fa-trash text-xs"></i></button>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Project / System Name *</label>
+                                    <input type="text" value="${escapeHTML(proj.title)}" oninput="updateArrayField('projects', ${idx}, 'title', this.value)"
+                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white" placeholder="ChronosKV — Distributed Key-Value Store">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Tech Stack Tags *</label>
+                                    <input type="text" value="${escapeHTML(proj.techStack)}" oninput="updateArrayField('projects', ${idx}, 'techStack', this.value)"
+                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white" placeholder="Go, gRPC, Raft, Docker">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">GitHub / Repo Link</label>
+                                    <input type="text" value="${escapeHTML(proj.githubLink)}" oninput="updateArrayField('projects', ${idx}, 'githubLink', this.value)"
+                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white" placeholder="github.com/user/repo">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Live Demo / Whitepaper URL</label>
+                                    <input type="text" value="${escapeHTML(proj.liveLink)}" oninput="updateArrayField('projects', ${idx}, 'liveLink', this.value)"
+                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white" placeholder="demo.yourapp.dev">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Duration / Year</label>
+                                    <input type="text" value="${escapeHTML(proj.duration)}" oninput="updateArrayField('projects', ${idx}, 'duration', this.value)"
+                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white" placeholder="Jan 2025 – Apr 2025">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Short Subtitle (Optional)</label>
+                                    <input type="text" value="${escapeHTML(proj.subtitle)}" oninput="updateArrayField('projects', ${idx}, 'subtitle', this.value)"
+                                        class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white" placeholder="Fault-Tolerant Storage Engine">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-slate-400 mb-1">Architecture & Engineering Bullets (One per line)</label>
+                                <textarea rows="3" oninput="updateArrayBullets('projects', ${idx}, this.value)"
+                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white leading-relaxed focus:border-blue-500 focus:outline-none">${escapeHTML(bulletsText)}</textarea>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+                container.innerHTML = html;
+            }
+
+            else if (activeTab === 'skills') {
+                const s = resumeState.skills;
+                container.innerHTML = `
+                    <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-4 space-y-4">
+                        <div>
+                            <h2 class="text-sm font-bold text-white">Categorized Technical Skills & Coding Profiles</h2>
+                            <p class="text-[11px] text-slate-400">ATS parsers strongly favor structured skill categories over progress bars.</p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-300 mb-1">Programming Languages</label>
+                                <input type="text" value="${escapeHTML(s.languages)}" oninput="updateSkills('languages', this.value)"
+                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" placeholder="C++, Go, Python, Java, TypeScript, SQL, Rust">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-300 mb-1">Frameworks, Libraries & Databases</label>
+                                <input type="text" value="${escapeHTML(s.frameworks)}" oninput="updateSkills('frameworks', this.value)"
+                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" placeholder="React, Next.js, Node.js, Spring Boot, PostgreSQL, Redis, Kafka">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-300 mb-1">Cloud, DevOps & Infrastructure</label>
+                                <input type="text" value="${escapeHTML(s.cloudDevops)}" oninput="updateSkills('cloudDevops', this.value)"
+                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" placeholder="AWS, Docker, Kubernetes, Terraform, Linux, CI/CD, Prometheus">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-300 mb-1">${isStudent ? 'Core Computer Science & Systems' : 'Architecture, Governance & Leadership Competencies'}</label>
+                                <input type="text" value="${escapeHTML(s.coreSystems)}" oninput="updateSkills('coreSystems', this.value)"
+                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" placeholder="Distributed Systems, System Design, Data Structures & Algorithms, DBMS">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-medium text-slate-300 mb-1">${isStudent ? 'Coding Profiles & Competitive Ranks (LeetCode / Codeforces / GitHub)' : 'Patents, Publications & Public Speaking'}</label>
+                                <input type="text" value="${escapeHTML(s.codingProfiles)}" oninput="updateSkills('codingProfiles', this.value)"
+                                    class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white" placeholder="LeetCode: 2140 (Guardian) | Codeforces: 1780 (Expert)">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            else if (activeTab === 'achievements') {
+                const achText = (resumeState.achievements || []).join('\n');
+                container.innerHTML = `
+                    <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-4 space-y-4">
+                        <div>
+                            <h2 class="text-sm font-bold text-white">${isStudent ? 'Achievements, Hackathons, Ranks & PORs' : 'Certifications, Patents, Awards & Board Advisory'}</h2>
+                            <p class="text-[11px] text-slate-400">Enter one achievement or certification per line.</p>
+                        </div>
+                        <textarea rows="8" oninput="updateAchievements(this.value)"
+                            class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2.5 text-xs text-white leading-relaxed focus:border-blue-500 focus:outline-none"
+                            placeholder="• Winner at Smart India Hackathon 2024...\n• AWS Certified Solutions Architect Professional...">${escapeHTML(achText)}</textarea>
+                    </div>
+                `;
+            }
+
+            else if (activeTab === 'order') {
+                const sectionLabels = {
+                    summary: 'Executive Summary / Objective',
+                    education: 'Education & Academic Credentials',
+                    skills: 'Technical Skills & Coding Profiles',
+                    experience: 'Work Experience / Internships',
+                    projects: 'Projects & System Architectures',
+                    achievements: 'Achievements, Hackathons & Certifications'
+                };
+
+                let html = `
+                    <div class="bg-slate-800/40 border border-slate-800 rounded-xl p-4 space-y-4">
+                        <div>
+                            <h2 class="text-sm font-bold text-white">Customize Resume Section Order</h2>
+                            <p class="text-[11px] text-slate-400">
+                                Students usually place <strong>Education & Skills</strong> at the top, while Tech Officials prioritize <strong>Summary & Experience</strong>.
+                            </p>
+                        </div>
+                        <div class="space-y-2">
+                `;
+
+                resumeState.sectionOrder.forEach((secKey, idx) => {
+                    html += `
+                        <div class="flex items-center justify-between bg-slate-900 border border-slate-700/80 rounded-lg px-3.5 py-2.5">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-5 h-5 rounded bg-slate-800 text-blue-400 font-mono text-xs flex items-center justify-center">${idx + 1}</span>
+                                <span class="text-xs font-medium text-slate-200">${sectionLabels[secKey] || secKey}</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <button onclick="moveSectionOrder(${idx}, -1)" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs" ${idx === 0 ? 'disabled style="opacity:0.3"' : ''}>
+                                    <i class="fa-solid fa-arrow-up"></i>
+                                </button>
+                                <button onclick="moveSectionOrder(${idx}, 1)" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs" ${idx === resumeState.sectionOrder.length - 1 ? 'disabled style="opacity:0.3"' : ''}>
+                                    <i class="fa-solid fa-arrow-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `</div></div>`;
+                container.innerHTML = html;
+            }
+        }
+
+        /********************************************************************
+         * 6. FORM DATA MUTATION HANDLERS
+         ********************************************************************/
+        function updatePersonal(field, value) {
+            resumeState.personal[field] = value;
+            // Ensure summary is in sectionOrder if user types one
+            if (field === 'summary' && value.trim() !== '' && !resumeState.sectionOrder.includes('summary')) {
+                resumeState.sectionOrder.unshift('summary');
+            }
+            onStateUpdated();
+        }
+
+        function updateSkills(field, value) {
+            resumeState.skills[field] = value;
+            onStateUpdated();
+        }
+
+        function updateAchievements(text) {
+            resumeState.achievements = text.split('\n').map(l => l.replace(/^[•\-*]\s*/, '').trim()).filter(Boolean);
+            onStateUpdated();
+        }
+
+        function updateArrayField(section, index, field, value) {
+            resumeState[section][index][field] = value;
+            onStateUpdated();
+        }
+
+        function updateArrayBullets(section, index, text) {
+            resumeState[section][index].bullets = text.split('\n').map(l => l.replace(/^[•\-*]\s*/, '').trim()).filter(Boolean);
+            onStateUpdated();
+        }
+
+        function moveArrayItem(section, index, direction) {
+            const arr = resumeState[section];
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= arr.length) return;
+            const temp = arr[index];
+            arr[index] = arr[newIndex];
+            arr[newIndex] = temp;
+            renderEditorForm();
+            onStateUpdated();
+        }
+
+        function removeArrayItem(section, index) {
+            resumeState[section].splice(index, 1);
+            renderEditorForm();
+            onStateUpdated();
+        }
+
+        function addEducationItem() {
+            resumeState.education.push({
+                id: 'edu-' + Date.now(),
+                institution: 'New Institute of Technology',
+                degree: 'B.Tech in Computer Science',
+                score: 'CGPA: 8.5 / 10.0',
+                duration: '2022 – 2026',
+                location: 'India',
+                coursework: 'Data Structures, Algorithms, Operating Systems'
+            });
+            renderEditorForm();
+            onStateUpdated();
+        }
+
+        function addExperienceItem() {
+            resumeState.experience.unshift({
+                id: 'exp-' + Date.now(),
+                role: 'Software Engineering Intern / Lead',
+                company: 'Tech Corp',
+                duration: 'May 2025 – Jul 2025',
+                location: 'Bengaluru, India',
+                techStack: 'Go, React, PostgreSQL, Docker',
+                bullets: [
+                    'Engineered scalable REST & gRPC APIs handling 10,000+ requests per minute with 99.95% uptime.',
+                    'Reduced database query latency by 35% through query optimization and Redis caching.'
+                ]
+            });
+            renderEditorForm();
+            onStateUpdated();
+        }
+
+        function addProjectItem() {
+            resumeState.projects.unshift({
+                id: 'proj-' + Date.now(),
+                title: 'New Distributed System / AI Project',
+                subtitle: 'Full-Stack Cloud Application',
+                duration: '2025',
+                techStack: 'TypeScript, Next.js, FastAPI, Docker',
+                githubLink: 'github.com/username/project',
+                liveLink: '',
+                bullets: [
+                    'Architected an end-to-end platform supporting real-time telemetry and automated CI/CD deployment.'
+                ]
+            });
+            renderEditorForm();
+            onStateUpdated();
+        }
+
+        function moveSectionOrder(index, direction) {
+            const arr = resumeState.sectionOrder;
+            const newIdx = index + direction;
+            if (newIdx < 0 || newIdx >= arr.length) return;
+            const temp = arr[index];
+            arr[index] = arr[newIdx];
+            arr[newIdx] = temp;
+            renderEditorForm();
+            onStateUpdated();
+        }
+
+        function onStateUpdated() {
+            renderResumePreview();
+            calculateATSScore();
+            saveState();
+        }
+
+        /********************************************************************
+         * 7. LIVE A4 RESUME RENDERER (3 ATS TEMPLATES)
+         ********************************************************************/
+        function formatSmartText(str) {
+            if (!str) return '';
+            // Highlight percentages, latency metrics, multipliers, currency, and ratings subtly
+            const safe = escapeHTML(str);
+            return safe.replace(/(\b\d+(?:\.\d+)?%|\b\d+(?:,\d+)+\+?|\$\d+(?:\.\d+)?[BMK]\+?|\b\d+(?:\.\d+)?x\b|\b99\.9+\d*%\b)/g, '<strong class="font-semibold text-gray-900">$1</strong>');
+        }
+
+        function renderResumePreview() {
+            const sheet = document.getElementById('resume-sheet');
+            if (!sheet) return;
+
+            const p = resumeState.personal;
+            const isExecTpl = resumeState.template === 'executive';
+            const isCompactTpl = resumeState.template === 'compact';
+
+            // 1. Build Header Contact Items
+            const contactItems = [];
+            if (p.phone) contactItems.push(`<span><i class="fa-solid fa-phone text-[8pt] mr-1 opacity-75"></i>${escapeHTML(p.phone)}</span>`);
+            if (p.email) contactItems.push(`<a href="mailto:${escapeHTML(p.email)}" class="hover:underline"><i class="fa-solid fa-envelope text-[8pt] mr-1 opacity-75"></i>${escapeHTML(p.email)}</a>`);
+            if (p.location) contactItems.push(`<span><i class="fa-solid fa-location-dot text-[8pt] mr-1 opacity-75"></i>${escapeHTML(p.location)}</span>`);
+            if (p.linkedin) contactItems.push(`<a href="https://${escapeHTML(p.linkedin.replace(/^https?:\/\//,''))}" target="_blank" class="hover:underline"><i class="fa-brands fa-linkedin text-[8.5pt] mr-1 opacity-80"></i>${escapeHTML(p.linkedin)}</a>`);
+            if (p.github) contactItems.push(`<a href="https://${escapeHTML(p.github.replace(/^https?:\/\//,''))}" target="_blank" class="hover:underline"><i class="fa-brands fa-github text-[8.5pt] mr-1 opacity-80"></i>${escapeHTML(p.github)}</a>`);
+            if (p.portfolio) contactItems.push(`<a href="https://${escapeHTML(p.portfolio.replace(/^https?:\/\//,''))}" target="_blank" class="hover:underline"><i class="fa-solid fa-globe text-[8pt] mr-1 opacity-75"></i>${escapeHTML(p.portfolio)}</a>`);
+
+            let headerHTML = '';
+            if (isExecTpl) {
+                headerHTML = `
+                    <header class="border-b-2 pb-2.5 mb-2" style="border-color: var(--resume-accent)">
+                        <div class="flex justify-between items-baseline flex-wrap gap-2">
+                            <h1 class="text-[20pt] font-bold tracking-tight uppercase" style="color: var(--resume-accent)">${escapeHTML(p.fullName || 'YOUR NAME')}</h1>
+                            ${p.codingProfile ? `<span class="text-[8.5pt] font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-800 border border-slate-300">${escapeHTML(p.codingProfile)}</span>` : ''}
+                        </div>
+                        ${p.headline ? `<p class="text-[10pt] font-semibold text-gray-800 mt-0.5">${escapeHTML(p.headline)}</p>` : ''}
+                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[8.8pt] text-gray-700 mt-1.5">
+                            ${contactItems.join('<span class="text-gray-300">•</span>')}
+                        </div>
+                    </header>
+                `;
+            } else if (isCompactTpl) {
+                headerHTML = `
+                    <header class="border-b border-gray-800 pb-1.5 mb-1.5 flex justify-between items-end flex-wrap gap-2">
+                        <div>
+                            <h1 class="text-[17pt] font-bold tracking-tight text-gray-900 uppercase leading-none">${escapeHTML(p.fullName || 'YOUR NAME')}</h1>
+                            ${p.headline ? `<p class="text-[9pt] font-medium text-gray-700 mt-1">${escapeHTML(p.headline)}</p>` : ''}
+                            ${p.codingProfile ? `<p class="text-[8.5pt] font-semibold mt-0.5" style="color: var(--resume-accent)">${escapeHTML(p.codingProfile)}</p>` : ''}
+                        </div>
+                        <div class="text-right text-[8.3pt] text-gray-700 space-y-0.5 max-w-[55%]">
+                            <div class="flex flex-wrap justify-end gap-x-2.5 gap-y-0.5">
+                                ${contactItems.join('<span class="text-gray-400">|</span>')}
+                            </div>
+                        </div>
+                    </header>
+                `;
+            } else {
+                // Default: Jake's Classic Tech (Centered Single-Column ATS Standard)
+                headerHTML = `
+                    <header class="text-center mb-2">
+                        <h1 class="text-[19pt] font-bold tracking-tight text-gray-900 uppercase">${escapeHTML(p.fullName || 'YOUR NAME')}</h1>
+                        ${p.headline ? `<p class="text-[9.3pt] font-medium text-gray-700 mt-0.5">${escapeHTML(p.headline)}</p>` : ''}
+                        <div class="flex flex-wrap justify-center items-center gap-x-2.5 gap-y-0.5 text-[8.7pt] text-gray-800 mt-1">
+                            ${contactItems.join('<span class="text-gray-400">|</span>')}
+                        </div>
+                        ${p.codingProfile ? `<div class="text-[8.6pt] font-semibold text-gray-900 mt-0.5">${escapeHTML(p.codingProfile)}</div>` : ''}
+                    </header>
+                `;
+            }
+
+            // 2. Section Renderers Map
+            const sectionRenderers = {
+                summary: () => {
+                    if (!p.summary || !p.summary.trim()) return '';
+                    return `
+                        <section>
+                            <h2 class="sec-title">${resumeState.mode === 'official' ? 'Executive Summary' : 'Profile Summary'}</h2>
+                            <p class="text-[9.2pt] text-gray-800 leading-snug">${formatSmartText(p.summary)}</p>
+                        </section>
+                    `;
+                },
+
+                education: () => {
+                    if (!resumeState.education || resumeState.education.length === 0) return '';
+                    const itemsHTML = resumeState.education.map(edu => `
+                        <div class="mb-1.5 last:mb-0">
+                            <div class="flex justify-between items-baseline">
+                                <span class="text-[9.8pt] font-bold text-gray-900">${escapeHTML(edu.institution)}</span>
+                                <span class="text-[8.8pt] font-medium text-gray-800 shrink-0">${escapeHTML(edu.duration)}</span>
+                            </div>
+                            <div class="flex justify-between items-baseline text-[9.1pt]">
+                                <span class="italic text-gray-800">${escapeHTML(edu.degree)} ${edu.score ? `<strong class="not-italic font-semibold text-gray-900 ml-1">(${escapeHTML(edu.score)})</strong>` : ''}</span>
+                                <span class="text-[8.5pt] italic text-gray-600 shrink-0">${escapeHTML(edu.location)}</span>
+                            </div>
+                            ${edu.coursework ? `<div class="text-[8.5pt] text-gray-700 mt-0.5"><strong class="font-semibold text-gray-800">Relevant Detail:</strong> ${escapeHTML(edu.coursework)}</div>` : ''}
+                        </div>
+                    `).join('');
+
+                    return `
+                        <section>
+                            <h2 class="sec-title">Education</h2>
+                            ${itemsHTML}
+                        </section>
+                    `;
+                },
+
+                skills: () => {
+                    const s = resumeState.skills;
+                    if (!s) return '';
+                    const rows = [];
+                    if (s.languages) rows.push(`<div><strong class="font-bold text-gray-900">Languages:</strong> <span>${escapeHTML(s.languages)}</span></div>`);
+                    if (s.frameworks) rows.push(`<div><strong class="font-bold text-gray-900">Frameworks & Databases:</strong> <span>${escapeHTML(s.frameworks)}</span></div>`);
+                    if (s.cloudDevops) rows.push(`<div><strong class="font-bold text-gray-900">Cloud, DevOps & Tools:</strong> <span>${escapeHTML(s.cloudDevops)}</span></div>`);
+                    if (s.coreSystems) rows.push(`<div><strong class="font-bold text-gray-900">${resumeState.mode === 'student' ? 'Core CS & Systems' : 'Architecture & Leadership'}:</strong> <span>${escapeHTML(s.coreSystems)}</span></div>`);
+                    if (s.codingProfiles) rows.push(`<div><strong class="font-bold text-gray-900">${resumeState.mode === 'student' ? 'Coding Profiles' : 'Patents & Credentials'}:</strong> <span>${formatSmartText(s.codingProfiles)}</span></div>`);
+
+                    if (rows.length === 0) return '';
+                    return `
+                        <section>
+                            <h2 class="sec-title">${resumeState.mode === 'student' ? 'Technical Skills & Coding Profiles' : 'Core Technical Competencies & Architecture'}</h2>
+                            <div class="text-[9.1pt] text-gray-800 space-y-0.5">
+                                ${rows.join('')}
+                            </div>
+                        </section>
+                    `;
+                },
+
+                experience: () => {
+                    if (!resumeState.experience || resumeState.experience.length === 0) return '';
+                    const itemsHTML = resumeState.experience.map(exp => {
+                        const bulletsHTML = (exp.bullets || []).map(b => `<li>${formatSmartText(b)}</li>`).join('');
+                        return `
+                            <div class="mb-2 last:mb-0">
+                                <div class="flex justify-between items-baseline">
+                                    <div>
+                                        <span class="text-[9.8pt] font-bold text-gray-900">${escapeHTML(exp.role)}</span>
+                                        <span class="text-[9.5pt] font-semibold text-gray-800"> — ${escapeHTML(exp.company)}</span>
+                                    </div>
+                                    <span class="text-[8.8pt] font-medium text-gray-800 shrink-0">${escapeHTML(exp.duration)}</span>
+                                </div>
+                                <div class="flex justify-between items-baseline text-[8.6pt] italic text-gray-700">
+                                    <span>${exp.techStack ? `<strong class="not-italic font-semibold text-gray-800">Stack:</strong> ${escapeHTML(exp.techStack)}` : ''}</span>
+                                    <span>${escapeHTML(exp.location)}</span>
+                                </div>
+                                ${bulletsHTML ? `<ul class="resume-bullets">${bulletsHTML}</ul>` : ''}
+                            </div>
+                        `;
+                    }).join('');
+
+                    return `
+                        <section>
+                            <h2 class="sec-title">${resumeState.mode === 'student' ? 'Experience & Internships' : 'Professional Experience & Executive Impact'}</h2>
+                            ${itemsHTML}
+                        </section>
+                    `;
+                },
+
+                projects: () => {
+                    if (!resumeState.projects || resumeState.projects.length === 0) return '';
+                    const itemsHTML = resumeState.projects.map(proj => {
+                        const bulletsHTML = (proj.bullets || []).map(b => `<li>${formatSmartText(b)}</li>`).join('');
+                        const links = [];
+                        if (proj.githubLink) links.push(`<a href="https://${escapeHTML(proj.githubLink.replace(/^https?:\/\//,''))}" target="_blank" class="underline font-medium text-gray-800">GitHub: ${escapeHTML(proj.githubLink.replace(/^https?:\/\/(www\.)?github\.com\//,''))}</a>`);
+                        if (proj.liveLink) links.push(`<a href="https://${escapeHTML(proj.liveLink.replace(/^https?:\/\//,''))}" target="_blank" class="underline font-medium text-gray-800">Live: ${escapeHTML(proj.liveLink)}</a>`);
+
+                        return `
+                            <div class="mb-2 last:mb-0">
+                                <div class="flex justify-between items-baseline gap-2">
+                                    <div class="text-[9.5pt]">
+                                        <span class="font-bold text-gray-900">${escapeHTML(proj.title)}</span>
+                                        ${proj.techStack ? `<span class="text-[8.7pt] italic text-gray-700"> | ${escapeHTML(proj.techStack)}</span>` : ''}
+                                        ${links.length ? `<span class="text-[8.3pt] ml-1.5">[${links.join(' | ')}]</span>` : ''}
+                                    </div>
+                                    <span class="text-[8.7pt] font-medium text-gray-800 shrink-0">${escapeHTML(proj.duration)}</span>
+                                </div>
+                                ${bulletsHTML ? `<ul class="resume-bullets">${bulletsHTML}</ul>` : ''}
+                            </div>
+                        `;
+                    }).join('');
+
+                    return `
+                        <section>
+                            <h2 class="sec-title">${resumeState.mode === 'student' ? 'Technical Projects' : 'Key System Architectures & Open Source'}</h2>
+                            ${itemsHTML}
+                        </section>
+                    `;
+                },
+
+                achievements: () => {
+                    if (!resumeState.achievements || resumeState.achievements.length === 0) return '';
+                    const bulletsHTML = resumeState.achievements.map(a => `<li>${formatSmartText(a)}</li>`).join('');
+                    return `
+                        <section>
+                            <h2 class="sec-title">${resumeState.mode === 'student' ? 'Achievements, Hackathons & Leadership' : 'Patents, Certifications & Honors'}</h2>
+                            <ul class="resume-bullets">${bulletsHTML}</ul>
+                        </section>
+                    `;
+                }
+            };
+
+            // 3. Assemble Sections According to User's Custom Order
+            let bodyHTML = '';
+            const renderedKeys = new Set();
+
+            // If in official mode and summary isn't in sectionOrder yet, prepend it
+            if (resumeState.mode === 'official' && !resumeState.sectionOrder.includes('summary')) {
+                resumeState.sectionOrder.unshift('summary');
+            }
+
+            resumeState.sectionOrder.forEach(secKey => {
+                if (sectionRenderers[secKey] && !renderedKeys.has(secKey)) {
+                    bodyHTML += sectionRenderers[secKey]();
+                    renderedKeys.add(secKey);
+                }
+            });
+
+            sheet.innerHTML = headerHTML + bodyHTML;
+        }
+
+        /********************************************************************
+         * 8. REAL-TIME ATS READABILITY & IMPACT ANALYZER
+         ********************************************************************/
+        function calculateATSScore() {
+            const checks = [];
+            let totalScore = 0;
+
+            // 1. Contact & Profile Links (15 pts)
+            const p = resumeState.personal;
+            const hasCoreContact = Boolean(p.fullName && p.email && p.phone);
+            const hasTechLinks = Boolean(p.github || p.linkedin);
+            if (hasCoreContact && hasTechLinks) {
+                totalScore += 15;
+                checks.push({ pass: true, title: "Complete Contact & Developer Links (+15)", desc: "Email, Phone, LinkedIn, and GitHub links detected for recruiter verification." });
+            } else {
+                totalScore += hasCoreContact ? 8 : 3;
+                checks.push({ pass: false, title: "Missing Tech Profile Links (+7 potential)", desc: "Ensure both LinkedIn and GitHub URLs are filled in Personal Info." });
+            }
+
+            // 2. Categorized Technical Skills (20 pts)
+            const s = resumeState.skills;
+            const skillCategoriesCount = [s.languages, s.frameworks, s.cloudDevops, s.coreSystems].filter(v => v && v.trim().length > 3).length;
+            if (skillCategoriesCount >= 3) {
+                totalScore += 20;
+                checks.push({ pass: true, title: "Structured ATS Skill Taxonomy (+20)", desc: `${skillCategoriesCount} distinct technical skill categories populated.` });
+            } else {
+                totalScore += skillCategoriesCount * 5;
+                checks.push({ pass: false, title: "Expand Technical Skill Categories", desc: "Populate Languages, Frameworks, Cloud/DevOps, and Core CS for keyword matching." });
+            }
+
+            // 3. Quantified Impact Metrics (%, latency, scale numbers) (25 pts)
+            const allBullets = [
+                ...(resumeState.experience || []).flatMap(e => e.bullets || []),
+                ...(resumeState.projects || []).flatMap(pr => pr.bullets || []),
+                ...(resumeState.achievements || [])
+            ];
+            const metricRegex = /(\d+(?:\.\d+)?%|\d+(?:,\d+)+\+?|\$\d+|\d+x\b|\d+\s*(?:ms|sec|TPS|RPS|users|nodes|stars))/i;
+            const quantifiedBullets = allBullets.filter(b => metricRegex.test(b));
+
+            if (quantifiedBullets.length >= 4) {
+                totalScore += 25;
+                checks.push({ pass: true, title: `Strong Quantified Impact (${quantifiedBullets.length} metrics found) (+25)`, desc: "Bullets effectively use %, latency reductions, scale, or rankings." });
+            } else {
+                const pts = quantifiedBullets.length * 6;
+                totalScore += pts;
+                checks.push({ pass: false, title: `Add More Quantified Metrics (${quantifiedBullets.length}/4 minimum)`, desc: "Include concrete numbers (e.g., 'cut latency by 40%', '15,000 req/s', 'CGPA 9.1')." });
+            }
+
+            // 4. Strong Action Verbs (20 pts)
+            let actionVerbCount = 0;
+            allBullets.forEach(b => {
+                const firstWord = b.trim().split(/\s+/)[0]?.toLowerCase().replace(/[^a-z]/g, '');
+                if (STRONG_ACTION_VERBS.includes(firstWord)) actionVerbCount++;
+            });
+
+            if (actionVerbCount >= 4) {
+                totalScore += 20;
+                checks.push({ pass: true, title: `High-Impact Action Verbs (${actionVerbCount} bullets) (+20)`, desc: "Bullets lead with engineering verbs like Engineered, Architected, Optimized." });
+            } else {
+                totalScore += Math.min(15, actionVerbCount * 4);
+                checks.push({ pass: false, title: "Start Bullets with Strong Action Verbs", desc: "Begin points with words like Engineered, Architected, Spearheaded, or Reduced." });
+            }
+
+            // 5. Mode-Specific Completeness Check (20 pts)
+            if (resumeState.mode === 'student') {
+                const hasEdu = resumeState.education && resumeState.education.length > 0;
+                const hasProj = resumeState.projects && resumeState.projects.length >= 2;
+                if (hasEdu && hasProj) {
+                    totalScore += 20;
+                    checks.push({ pass: true, title: "Student Mode Readiness (+20)", desc: "Education with CGPA/Score and 2+ technical projects with tech stacks verified." });
+                } else {
+                    totalScore += 10;
+                    checks.push({ pass: false, title: "Student Mode Completeness", desc: "Add at least 2 technical projects with GitHub links and complete Education details." });
+                }
+            } else {
+                const hasSummary = p.summary && p.summary.trim().length > 40;
+                const hasExp = resumeState.experience && resumeState.experience.length >= 2;
+                if (hasSummary && hasExp) {
+                    totalScore += 20;
+                    checks.push({ pass: true, title: "Tech Official Executive Readiness (+20)", desc: "Executive summary and multi-role leadership/architecture experience verified." });
+                } else {
+                    totalScore += 10;
+                    checks.push({ pass: false, title: "Tech Official Completeness", desc: "Include an Executive Summary and at least 2 detailed work experience entries." });
+                }
+            }
+
+            totalScore = Math.min(100, Math.max(10, totalScore));
+
+            // Update UI Indicator
+            const scoreVal = document.getElementById('ats-score-val');
+            const badge = document.getElementById('ats-badge');
+            const ring = document.getElementById('ats-score-ring');
+            const feedback = document.getElementById('ats-feedback-text');
+
+            if (scoreVal) scoreVal.textContent = `${totalScore}%`;
+
+            if (totalScore >= 85) {
+                ring.className = "relative w-11 h-11 rounded-full bg-slate-900 border-2 border-emerald-500 flex items-center justify-center shrink-0";
+                scoreVal.className = "text-xs font-bold text-emerald-400";
+                badge.className = "text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-medium";
+                badge.textContent = "ATS Optimized";
+            } else if (totalScore >= 65) {
+                ring.className = "relative w-11 h-11 rounded-full bg-slate-900 border-2 border-amber-500 flex items-center justify-center shrink-0";
+                scoreVal.className = "text-xs font-bold text-amber-400";
+                badge.className = "text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 font-medium";
+                badge.textContent = "Good — Can Improve";
+            } else {
+                ring.className = "relative w-11 h-11 rounded-full bg-slate-900 border-2 border-rose-500 flex items-center justify-center shrink-0";
+                scoreVal.className = "text-xs font-bold text-rose-400";
+                badge.className = "text-[10px] px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-400 font-medium";
+                badge.textContent = "Needs Attention";
+            }
+
+            const failedCheck = checks.find(c => !c.pass);
+            if (feedback) {
+                feedback.textContent = failedCheck
+                    ? `Tip: ${failedCheck.desc}`
+                    : `All ${checks.length} ATS parser & quantified impact checks passed!`;
+            }
+
+            // Populate Audit Modal
+            const modalBody = document.getElementById('ats-modal-body');
+            if (modalBody) {
+                modalBody.innerHTML = checks.map(c => `
+                    <div class="p-3 rounded-xl border ${c.pass ? 'bg-emerald-950/20 border-emerald-800/50' : 'bg-amber-950/20 border-amber-800/50'} flex items-start gap-3">
+                        <i class="fa-solid ${c.pass ? 'fa-circle-check text-emerald-400' : 'fa-triangle-exclamation text-amber-400'} mt-0.5"></i>
+                        <div>
+                            <div class="font-semibold text-white">${c.title}</div>
+                            <div class="text-slate-400 mt-0.5">${c.desc}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function toggleATSModal() {
+            const modal = document.getElementById('ats-modal');
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } else {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        /********************************************************************
+         * 9. EXPORT TO PDF & JSON PERSISTENCE
+         ********************************************************************/
+        function triggerPrintPDF() {
+            // Ensure preview panel is visible on mobile before printing
+            const previewPanel = document.getElementById('preview-panel');
+            const wasHidden = previewPanel.classList.contains('hidden');
+            if (wasHidden) {
+                previewPanel.classList.remove('hidden');
+            }
+            window.print();
+            if (wasHidden) {
+                previewPanel.classList.add('hidden');
+            }
+        }
+
+        function exportResumeJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(resumeState, null, 2));
+            const dlAnchor = document.createElement('a');
+            const safeName = (resumeState.personal.fullName || 'resume').toLowerCase().replace(/\s+/g, '_');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", `${safeName}_resutech_${resumeState.mode}.json`);
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+            showToast("Exported Resume JSON backup!");
+        }
+
+        function importResumeJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed && parsed.personal) {
+                        resumeState = parsed;
+                        syncUIWithState();
+                        renderEditorForm();
+                        renderResumePreview();
+                        calculateATSScore();
+                        saveState();
+                        showToast("Imported Resume JSON successfully!");
+                    } else {
+                        showToast("Invalid Resume JSON structure", "fa-circle-exclamation text-rose-400");
+                    }
+                } catch (err) {
+                    showToast("Error parsing JSON file", "fa-circle-exclamation text-rose-400");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+    </script>
+</body>
+</html>
